@@ -70,7 +70,6 @@ void Solver::run(const Problem* problem)
     uint comb = combinations(m_problem->n, m_problem->a);
 
     cout << "Start price: " << m_solution->price << endl;
-    cout << "Start nodes: " << state << endl;
     cout << "Number of combinations: " << comb << endl;
 
     uint prevIter = 0;
