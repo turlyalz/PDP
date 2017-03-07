@@ -1,8 +1,11 @@
 #include "Solver.h"
 
+#include "base.h"
+
 #include <algorithm>
 #include <limits>
 #include <iostream>
+#include <chrono>
 
 using namespace std;
 
@@ -14,28 +17,6 @@ Solver::Solver()
 Solver::~Solver()
 {
     delete m_solution;
-}
-
-ostream& operator<<(ostream& os, const vector<uint>& nodes)
-{
-    for (uint i = 0; i < nodes.size(); ++i)
-    {
-        os << nodes[i];
-        if (i != nodes.size() - 1)
-        {
-            os << " ";
-        }
-    }
-    return os;
-}
-
-ostream& operator<<(ostream& os, const Solution& solution)
-{
-    os << "------ Solution ------" << endl;
-    os << "Price: " << solution.price << endl;
-    os << "Nodes: " << '[' << solution.nodes << ']' << endl;
-    os << "----------------------" << endl;
-    return os;
 }
 
 uint Solver::combinations(uint n, uint k) const
@@ -59,7 +40,7 @@ uint Solver::calculatePrice(const vector<uint>& state)
     {
         for (uint col = row + 1; col < m_problem->graph[row].size(); ++col)
         {
-            if (m_problem->graph[row][col] && (binary_search(state.begin(), state.end(), row) != binary_search(state.begin(), state.end(), col)))
+            if (m_problem->graph[row][col] && (binary_search(state.cbegin(), state.cend(), row) != binary_search(state.cbegin(), state.cend(), col)))
             {
                 price++;
             }
@@ -75,6 +56,7 @@ void Solver::run(const Problem* problem)
     {
         return;
     }
+    auto start = chrono::high_resolution_clock::now();
 
     vector<uint> state(m_problem->a);
 
@@ -88,6 +70,7 @@ void Solver::run(const Problem* problem)
     uint comb = combinations(m_problem->n, m_problem->a);
 
     cout << "Start price: " << m_solution->price << endl;
+    cout << "Start nodes: " << state << endl;
     cout << "Number of combinations: " << comb << endl;
 
     uint prevIter = 0;
@@ -96,16 +79,21 @@ void Solver::run(const Problem* problem)
         uint i = m_problem->a;
         uint lastNode = m_problem->n;
 
-        while (state[--i] == --lastNode) {}
+        while (state[--i] == --lastNode);
         ++state[i];
 
         if (i != 0 && i != prevIter)
         {
             prevIter = i;
-            uint price = calculatePrice(state);
-            if (price >= m_solution->price)
+
+            // Calculate predicate price
+            vector<uint> predState(state.begin(), state.begin() + i);
+            uint price = calculatePrice(predState);
+
+            // If the price is bigger than the min price then ignore branch
+            if (price > m_solution->price)
             {
-                state[i] = m_problem->n - m_problem->a - i;
+                state[i] = m_problem->n - m_problem->a + i;
                 continue;
             }
         }
@@ -129,4 +117,9 @@ void Solver::run(const Problem* problem)
     }
 
     cout << *m_solution;
+
+    auto stop = chrono::high_resolution_clock::now();
+    using fpSeconds = chrono::duration<float, chrono::seconds::period>;
+    auto elapsedTime = fpSeconds(stop - start).count();
+    cout << "Elapsed time: " << elapsedTime << " seconds" << endl;
 }

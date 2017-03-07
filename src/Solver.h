@@ -2,14 +2,7 @@
 #define SOLVER_H
 
 #include "Problem.h"
-
-struct Problem;
-
-struct Solution
-{
-    uint price;
-    std::vector<uint> nodes;
-};
+#include "Solution.h"
 
 class Solver
 {

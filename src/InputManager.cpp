@@ -1,12 +1,16 @@
 #include "InputManager.h"
 #include "Problem.h"
 
+#include "base.h"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <string>
 
 #include <cstring>
+
+using namespace std;
 
 InputManager::~InputManager()
 {
@@ -18,7 +22,7 @@ InputManager::~InputManager()
 
 void InputManager::printHelp() const
 {
-    std::cout << "Run program: ./gbw.out -f FILE_NAME -a NATURAL_NUMBER" << std::endl;
+    cout << "Run program: ./bw.out -f FILE_NAME -a NATURAL_NUMBER" << endl;
 }
 
 bool InputManager::parse(int argc, char* argv[])
@@ -27,50 +31,50 @@ bool InputManager::parse(int argc, char* argv[])
 	{
 		m_problem = new Problem();
 
-		std::string fileName;
+        string fileName;
 		if (strcmp("-f", argv[1]) == 0)
 		{
 			fileName = argv[2];
 		}
 		else
 		{
-			std::cerr << "Argument " << argv[1] << " unknown" << std::endl;
+            cerr << "Argument " << argv[1] << " unknown" << endl;
             printHelp();
 			return false;
 		}
 
 		if (strcmp("-a", argv[3]) == 0)
 		{
-			m_problem->a = std::stoi(argv[4]);
+            m_problem->a = stoi(argv[4]);
 		}
 		else
 		{
-			std::cerr << "Argument " << argv[3] << " unknown" << std::endl;
+            cerr << "Argument " << argv[3] << " unknown" << endl;
             printHelp();
 			return false;
 		}
 
-		std::ifstream in(fileName);
+        ifstream in(fileName);
 		if (in.is_open())
 		{
-			std::string data;
-			std::getline(in, data);
+            string data;
+            getline(in, data);
 
-			std::istringstream iss(data);
+            istringstream iss(data);
 			iss >> m_problem->n;
 
 			if (m_problem->a < 5 || m_problem->a >(m_problem->n / 2))
 			{
-				std::cerr << "a must be in range [5, n/2]" << std::endl;
+                cerr << "a must be in range [5, n/2]" << endl;
 				return false;
 			}
 			
-			while (std::getline(in, data))
+            while (getline(in, data))
 			{
-				std::vector<bool> row;
+                vector<bool> row;
 				if (data.size() != m_problem->n)
 				{
-					std::cerr << "Incorrect file: " << fileName << std::endl;
+                    cerr << "Incorrect file: " << fileName << endl;
 					return false;
 				}
 
@@ -81,17 +85,18 @@ bool InputManager::parse(int argc, char* argv[])
 				m_problem->graph.push_back(row);
 			}
 
+            cout << m_problem->graph;
 			in.close();
 			return true;
 		}
 		else
 		{
-            std::cerr << "Unable to open file: " + fileName << std::endl;
+            cerr << "Unable to open file: " + fileName << endl;
 		}
 	}
 	else
 	{
-		std::cerr << "Number of arguments must be 4" << std::endl;
+        cerr << "Number of arguments must be 4" << endl;
         printHelp();
 	}
 	return false;

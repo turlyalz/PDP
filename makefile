@@ -1,8 +1,8 @@
 compile: 
-	g++ -std=c++14 -Wall -pedantic src/*.cpp -o gbw.out
+	g++ -std=c++14 -Wall -pedantic src/*.cpp -o bw.out
 
 valrun:
-	valgrind ./gbw.out.out
+	valgrind ./bw.out
 
 clean:
-	rm -f ./gbw.out
+	rm -f ./bw.out
