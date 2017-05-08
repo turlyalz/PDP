@@ -19,19 +19,21 @@ Solver::~Solver()
     delete m_solution;
 }
 
-uint Solver::combinations(uint n, uint k) const
+unsigned long long Solver::combinations(uint n, uint k) const
 {
-    vector<bool> bitmask(k, true);
-    bitmask.resize(n, false);
+    if (k > n)
+    {
+        return 0;
+    }
+    unsigned long long r = 1;
 
-    int counter = 0;
-    do {
-        ++counter;
-    } while (prev_permutation(bitmask.begin(), bitmask.end()));
-
-    return counter;
+    for (unsigned long long d = 1; d <= k; ++d)
+    {
+        r *= n--;
+        r /= d;
+    }
+    return r;
 }
-
 uint Solver::calculatePrice(const vector<uint>& state)
 {
     uint price = 0;
