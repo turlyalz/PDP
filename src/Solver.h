@@ -13,7 +13,7 @@ public:
     void run(const Problem* problem);
 
 private:
-    uint combinations(uint n, uint k) const;
+    unsigned long long combinations(uint n, uint k) const;
     uint calculatePrice(const std::vector<uint>& state);
 
     const Problem* m_problem;
